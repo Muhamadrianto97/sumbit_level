@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Submit Level</title>
+  <style>
+    body {
+      background-color: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    form {
+      background: #222;
+      padding: 50px;
+      border-radius: 50px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+      padding: 4rem;
+      border-radius: 2rem;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center; /* horizontal center */
+      justify-content: center; /* vertical center jika mau full tinggi */
+      min-height: 100vh; /* full tinggi layar */
+    }
+    h2 {
+      color: #00ffcc;
+      font-size: 2rem; /* Lebih besar */
+    }
+    label {
+      font-weight: bold;
+      display: block;
+    }
+    select {
+      width: 100%;
+      padding: 0.6rem;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #555;
+      margin-bottom: 1rem;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.25rem;
+      margin-bottom: 1rem;
+      background-color: #1e1e1e;
+      color: #fff;
+      border: 1px solid #333;
+      border-radius: 4px;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      background-color: #00b894;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #019875;
+    }
+    #response {
+      max-width: 30%;
+      margin-top: 2rem;
+      white-space: pre-wrap;
+      background-color: #1e1e1e;
+      padding: 1rem;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      border-radius: 4px;
+      border: 1px solid #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+  <h2>Echoes of Cryptalia</h2>
+  <form id="matchForm">
+    <label for="level">Level:</label><br>
+    <select id="level" name="level" required>
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+      <option value="6">6</option>
+      <option value="7">7</option>
+      <option value="8">8</option>
+      <option value="9">9</option>
+    </select>
+    <br>
+    <button type="submit">Submit</button>
+  </form>
+  <pre id="response"></pre>
+</div>
+  <script>
+    document.getElementById('matchForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const level = document.getElementById('level').value;
+
+      const responseElement = document.getElementById('response');
+      responseElement.textContent = 'Loading...';
+
+      try {
+        const res = await fetch('/submit-match', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ level })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          responseElement.textContent =
+            `✅ Match submitted!\n` +
+            `Level: ${level}\n` +
+            `Match ID: ${data.matchId}\n\n` +
+            `Full Response:\n${JSON.stringify(data.complete, null, 2)}`;
+        } else {
+          responseElement.textContent =
+            `❌ Error:\n` +
+            `Level: ${level}\n\n` +
+            `${JSON.stringify(data, null, 2)}`;
+        }
+      } catch (err) {
+        responseElement.textContent = `❌ Error: ${err.message}`;
+      }
+    });
+  </script>
+</body>
+</html>
