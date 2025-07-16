@@ -1,0 +1,55 @@
+# render.yaml
+# Ini adalah file konfigurasi untuk Render.com
+
+# Tentukan versi skema Render Blueprint
+# Ini penting untuk memastikan kompatibilitas dengan fitur Render di masa mendatang
+version: 1
+
+# Bagian 'services' mendefinisikan layanan yang akan di-deploy oleh Render
+services:
+  # Ini adalah definisi untuk layanan web utama Anda (aplikasi Node.js)
+  - type: web # Menentukan jenis layanan sebagai 'web service'
+    name: cryptalia-web-app # Nama unik untuk layanan Anda di Render
+    env: node # Menentukan runtime lingkungan sebagai Node.js
+    plan: free # Menggunakan paket gratis Render
+    # Jika Anda ingin menggunakan paket berbayar untuk 'Always On', Anda bisa mengubahnya menjadi 'starter' atau 'pro'
+    # plan: starter
+
+    # Lokasi repositori Git Anda.
+    # Render akan secara otomatis mendeteksi ini dari koneksi repositori yang Anda buat.
+    # Jika Anda menggunakan repositori publik, Render akan menariknya tanpa kredensial.
+    # repo: https://github.com/your-username/your-repo-name # Opsional, Render biasanya mendeteksi dari koneksi
+
+    # Branch Git yang akan dipantau untuk auto-deploy
+    branch: main # Atau 'master', tergantung branch utama repositori Anda
+
+    # Direktori root proyek Anda di dalam repositori.
+    # Jika server.js dan index.html ada di root repositori, biarkan kosong.
+    # Jika ada di subfolder (misal: 'app'), gunakan: rootDir: app
+    rootDir: .
+
+    # Perintah untuk menginstal dependensi (akan dijalankan saat build)
+    buildCommand: npm install
+
+    # Perintah untuk menjalankan aplikasi Anda setelah build selesai
+    startCommand: node server.js
+
+    # Variabel lingkungan yang dibutuhkan oleh aplikasi Anda
+    # Ini adalah tempat yang aman untuk menyimpan token dan ID sensitif
+    envVars:
+      - key: CRYPTALIA_AUTH_TOKEN # Nama variabel lingkungan di kode Anda (process.env.CRYPTALIA_AUTH_TOKEN)
+        sync: false # Set ke false agar tidak terlihat di log build
+        # value: YOUR_ACTUAL_AUTH_TOKEN_HERE # Jangan hardcode di sini! Gunakan Render Secrets!
+        # Render akan secara otomatis mengambil nilai dari Secrets yang Anda set di dashboard
+        # atau Anda bisa menambahkan 'fromService: your-secret-service' jika Anda punya Secret Service
+
+      # Contoh variabel lingkungan lain jika Anda ingin mengaturnya dari sini
+      - key: CRYPTALIA_TRIAL_ID
+        value: de8af613-7bb2-4fe4-a20f-19ddde2e82c1
+      - key: CRYPTALIA_USER_ID
+        value: 0c7e2da9-7c6b-4e3f-8879-3ad90e82d286
+
+    # Konfigurasi untuk health check (opsional tapi direkomendasikan untuk mencegah tidur)
+    healthCheckPath: /health # Render akan mem-ping endpoint ini untuk memeriksa kesehatan layanan
+    # healthCheckInterval: 30s # Interval ping Render (default 10s)
+    # healthCheckTimeout: 10s # Timeout untuk respons health check (default 5s)
